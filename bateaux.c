@@ -160,7 +160,7 @@ void tempsLocation() {
 
     Duree somMoins = Moins(SomHr,SomHd);
 
-    printf("le temps total d'occupation est: %d\n:%d\n ", somMoins.nbHeures, somMoins.nbMinutes);
+    printf("le temps total d'occupation est: %d:%02d\n ", somMoins.nbHeures, somMoins.nbMinutes);
 
 
 
@@ -202,8 +202,36 @@ void locationsInf2h() {
 
 }
 
-void creerLocations() {
+void printDuree(Duree d1) {
+    printf("< %d , %d > ",d1.nbHeures, d1.nbMinutes);
+}
+
+void creerLocations(RubanBateaux* lc) {
     //--{Création du Ruban des locations}
+
+    printf("La séquence des locations est\n");
+
+    for (int i = 0; i < numRentals; ++i) {
+        // Afficher le segment de temps de début de location
+        printDuree(bc(&Rd).nbHeures);
+
+        // Afficher la location
+        afficheUnRubanBateaux(lc(&Rl));
+
+        // Vérifier s'il y a un segment de temps de fin de location
+        if (i + 1 < numRentals) {
+            if (rentals[i].Rr < rentals[i + 1].Rd) {
+                // Afficher le segment de temps de fin de location
+                printDuree(bc(&Rr).h);
+            }
+        }
+
+        printf("   ");
+    }
+
+    saisie(&Rl);
+
+    printf("\n");
 
 
     //------------------------ à rédiger   -----------------------
