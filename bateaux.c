@@ -216,14 +216,13 @@ void locationsInf2h()
 
     if (minTotal < 120)
     {
-
         numLocationInfDeux++;
     }
     // Não está copiando mas era pra estar certo
     printf("Le nombre de locations dont la durée de location est inférieure à 2 heures: %d\n", numLocationInfDeux);
 }
 
-void creerLocations(RubanBateaux *lc)
+void creerLocations()
 {
     //--{Création du Ruban des locations}
 
@@ -254,7 +253,7 @@ void creerLocations(RubanBateaux *lc)
     //------------------------ à rédiger   -----------------------
 }
 
-void afficherLocations()
+void afficherLocations(RubanLocations *lc)
 {
     //--{Affihage du Ruban des locations}
 
