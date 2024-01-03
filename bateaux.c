@@ -13,39 +13,47 @@
 #include <unistd.h>
 #include "MachineBateaux.h"
 
-
 /*----------------------LEXIQUE PRINCIPAL---------------------------------*/
 /* Voir surtout MachineBateaux.h */
 
 RubanBateaux Rd, Rr; //{le ruban des départs et le ruban des retours}
-RubanLocations Rl; // {rubans des locations}
+RubanLocations Rl;   // {rubans des locations}
 
 /*------------------------------------------------------------------------*/
-void saisie(RubanBateaux* rb) {
+void saisie(RubanBateaux *rb)
+{
     // {ei: La machine bateaux a été déclarée. rb est soit le ruban des départs soit celui des retours
     //      rb->nomFichier est le nom du fichier où vont être enregistrés les bateaux}
     Bateau b;
 
     amorcer(rb);
     puts("Terminez la saisie avec 0 comme numéro de bateau...");
-    do {
+    do
+    {
         puts("Entrer un bateau (numéro , (heures, minutes))");
-        do {
+        do
+        {
             printf("Numéro : ");
             b.num = lireEntier();
         } while (b.num < 0 || b.num > NBATMAX);
 
-        if (b.num != 0) {
-            do {
+        if (b.num != 0)
+        {
+            do
+            {
                 printf("Heure : ");
                 b.h.heures = lireEntier();
             } while (b.h.heures < H_OUVR || b.h.heures > H_FERM);
 
-            if (b.h.heures == H_FERM) {
+            if (b.h.heures == H_FERM)
+            {
                 b.h.minutes = 0;
                 printf("Minutes : 00");
-            } else {
-                do {
+            }
+            else
+            {
+                do
+                {
                     printf("Minutes : ");
                     b.h.minutes = lireEntier();
                 } while (b.h.minutes < 0 || b.h.minutes > 59);
@@ -58,42 +66,48 @@ void saisie(RubanBateaux* rb) {
 }
 
 /*-----------------------------------------------------------------------*/
-void saisieRubans() {
+void saisieRubans()
+{
     int choix;
 
     puts("-----------------");
     puts("Saisie des rubans");
     puts("_________________");
-    do {
+    do
+    {
         //  *** {MENU SAISIE} ***
         puts("\n\n     -- Menu Saisie --\n");
         puts("\t1 : fichier des départs");
         puts("\t2 : fichier des retours");
         puts("\t3 : sortie de Menu Saisie");
         //  *** {test de validité du choix} ***
-        do {
+        do
+        {
             printf("\t\tVotre choix : ");
             choix = lireEntier();
         } while (choix < 1 || choix > 3);
 
-        switch (choix) {
-            case 1:
-                saisie(&Rd);
-                break;
-            case 2:
-                saisie(&Rr);
-                break;
-            case 3:
-                break;
+        switch (choix)
+        {
+        case 1:
+            saisie(&Rd);
+            break;
+        case 2:
+            saisie(&Rr);
+            break;
+        case 3:
+            break;
         }
     } while (choix != 3);
 }
 
 /*------------------------------------------------------------------------*/
-void afficheUnRubanBateaux(RubanBateaux* rb) {
+void afficheUnRubanBateaux(RubanBateaux *rb)
+{
     Bateau b;
     demarrer(rb);
-    while (bc(rb).num != MARQUE.num) {
+    while (bc(rb).num != MARQUE.num)
+    {
         b = bc(rb);
         printf("<%d, <%d, %02d>>\n", b.num, b.h.heures, b.h.minutes);
         avancer(rb);
@@ -102,7 +116,8 @@ void afficheUnRubanBateaux(RubanBateaux* rb) {
 }
 
 /*------------------------------------------------------------------------*/
-void afficheBateaux() {
+void afficheBateaux()
+{
     // {ei : les rubans de bateaux sont disponibles }
 
     printf("------------------------------------\n");
@@ -121,147 +136,140 @@ void afficheBateaux() {
  *--------           AUX AUTRES FONCTIONNALITÉS DEMANDÉES
  *------------------------------------------------------------------------*/
 
-
-
-Duree Plus(Duree d, Heure h) {
-        int SomM = d.nbMinutes + h.minutes;
-        if (SomM <= 59) {
-            return (Duree){d.nbHeures + h.heures,SomM};
-        } else {
-            return (Duree){1 + d.nbHeures + h.heures,SomM - 60};
-        }
+Duree Plus(Duree d, Heure h)
+{
+    int SomM = d.nbMinutes + h.minutes;
+    if (SomM <= 59)
+    {
+        return (Duree){d.nbHeures + h.heures, SomM};
     }
-
-Duree Moins(Duree d1,Duree d2) {
-        int DiffM = d1.nbMinutes - d2.nbMinutes;
-        if (DiffM >= 0) {
-            return (Duree){d1.nbHeures - d2.nbHeures, DiffM};
-        } else {
-            return (Duree){d1.nbHeures - d2.nbHeures - 1, 60+DiffM};
-        }
+    else
+    {
+        return (Duree){1 + d.nbHeures + h.heures, SomM - 60};
     }
-    
-void tempsLocation() {
-    //Programme de calcul du temps total d'occupation des bateaux pendant la journée
+}
+
+Duree Moins(Duree d1, Duree d2)
+{
+    int DiffM = d1.nbMinutes - d2.nbMinutes;
+    if (DiffM >= 0)
+    {
+        return (Duree){d1.nbHeures - d2.nbHeures, DiffM};
+    }
+    else
+    {
+        return (Duree){d1.nbHeures - d2.nbHeures - 1, 60 + DiffM};
+    }
+}
+
+void tempsLocation()
+{
+    // Programme de calcul du temps total d'occupation des bateaux pendant la journée
 
     // {Etat Initial : les rubans de Bateaux sont disponibles}
 
-    Duree SomHd = {0,0};
-    Duree SomHr = {0,0};
+    Duree SomHd = {0, 0};
+    Duree SomHr = {0, 0};
 
+    demarrer(&Rd);
+    demarrer(&Rr);
+    while (bc(&Rd).num != MARQUE.num)
+    {
+        SomHd = Plus(SomHd, bc(&Rd).h);
+        SomHr = Plus(SomHr, bc(&Rr).h);
 
-    demarrer(&Rd); demarrer(&Rr);
-    while (bc(&Rd).num != MARQUE.num) {
-        SomHd = Plus(SomHd,bc(&Rd).h);
-        SomHr = Plus(SomHr,bc(&Rr).h);
+        avancer(&Rd);
+        avancer(&Rr);
+    }
 
-        avancer(&Rd);avancer(&Rr);
-    } 
+    Duree somMoins = Moins(SomHr, SomHd);
 
-    Duree somMoins = Moins(SomHr,SomHd);
-
-    printf("le temps total d'occupation est: %d:%02d\n ", somMoins.nbHeures, somMoins.nbMinutes);
-
-
-
+    // Não aparecem os minutos
+    printf("le temps total d'occupation est: %d:%02d\n", somMoins.nbHeures, somMoins.nbMinutes);
 
     //{Etat Final : on a affiche le temps total de location des bateaux durant la journee ecoulee}
 }
 
-
-void locationsInf2h() {
+void locationsInf2h()
+{
     //--{affiche le nombre de bateaux dont la durée de location est inférieure à 2 heures}
 
-    Duree SomHd = {0,0};
-    Duree SomHr = {0,0};
+    Duree SomHd = {0, 0};
+    Duree SomHr = {0, 0};
 
+    demarrer(&Rd);
+    demarrer(&Rr);
+    while (bc(&Rd).num != MARQUE.num)
+    {
+        SomHd = Plus(SomHd, bc(&Rd).h);
+        SomHr = Plus(SomHr, bc(&Rr).h);
 
-    demarrer(&Rd); demarrer(&Rr);
-    while (bc(&Rd).num != MARQUE.num) {
-        SomHd = Plus(SomHd,bc(&Rd).h);
-        SomHr = Plus(SomHr,bc(&Rr).h);
-
-        avancer(&Rd);avancer(&Rr);
+        avancer(&Rd);
+        avancer(&Rr);
     };
 
-    Duree somMoins = Moins(SomHr,SomHd);
+    Duree somMoins = Moins(SomHr, SomHd);
 
     int numLocationInfDeux = 0;
 
-    for (int i = 0; i < somMoins; ++i) {
-        if (somMoins.nbHeures < 2) {
-            numLocationInfDeux++;
-        }
-    };
+    int minTotal = somMoins.nbHeures * 60 + somMoins.nbMinutes;
 
+    if (minTotal < 120)
+    {
+
+        numLocationInfDeux++;
+    }
+    // Não está copiando mas era pra estar certo
     printf("Le nombre de locations dont la durée de location est inférieure à 2 heures: %d\n", numLocationInfDeux);
-
-
-     //------------------------ à rédiger   -----------------------
-
-
 }
 
-void printDuree(Duree d1) {
-    printf("< %d , %d > ",d1.nbHeures, d1.nbMinutes);
-}
-
-void creerLocations(RubanBateaux* lc) {
+void creerLocations(RubanBateaux *lc)
+{
     //--{Création du Ruban des locations}
 
     printf("La séquence des locations est\n");
 
-    for (int i = 0; i < numRentals; ++i) {
+    for (bc > MARQUE.num)
+    {
         // Afficher le segment de temps de début de location
-        printDuree(bc(&Rd).nbHeures);
+        printf("< %d , < %d , %d > >   ", bc(&Rd).num, bc(&Rd).h.heures, bc(&Rd).h.minutes);
 
+        printf("< %d , < %d , %d > >   ", bc(&Rr).num, bc(&Rr).h.heures, bc(&Rr).h.minutes);
         // Afficher la location
-        afficheUnRubanBateaux(lc(&Rl));
+        // Tentar trocar por função afficher un ruban bateaux
 
         // Vérifier s'il y a un segment de temps de fin de location
-        if (i + 1 < numRentals) {
-            if (rentals[i].Rr < rentals[i + 1].Rd) {
+        if (avancer(bc) < MARQUE.num)
+        {
+            if (bc(&Rr) < bc(&Rd) + 1) // Rd + 1 -> Não sei como fazer mais um
+            {
                 // Afficher le segment de temps de fin de location
-                printDuree(bc(&Rr).h);
-            }
-        }
-
-        printf("   ");
-    }
-
-    saisie(&Rl);
+                printf("< %d , %d >   ", bc(&Rr).h.heures, bc(&Rr).h.minutes);
+            };
+        };
+    };
 
     printf("\n");
 
-
     //------------------------ à rédiger   -----------------------
-
-
 }
 
-
-
-void afficherLocations () {
+void afficherLocations()
+{
     //--{Affihage du Ruban des locations}
 
-
     //------------------------ à rédiger   -----------------------
-
 }
 
-void tempsMaxAttente () {
+void tempsMaxAttente()
+{
     //
-
 }
-
-
 
 //------------------------ la suite à rédiger   -----------------------
 
-
-
 /*------------------------- ALGORITHME PRINCIPAL ---------------------*/
-int main(int nbArgs, char* arg[])
+int main(int nbArgs, char *arg[])
 {
     /*------- Lexique -------*/
     int choix;
@@ -269,7 +277,8 @@ int main(int nbArgs, char* arg[])
     changeNomBateaux(&Rd, "fich_departs");
     changeNomBateaux(&Rr, "fich_retours");
     changeNomLocations(&Rl, "fich_location");
-    do {
+    do
+    {
 
         // *** {MENU PRINCIPAL} ***
         puts("\n\n                     -----  M E N U -----\n");
@@ -283,43 +292,44 @@ int main(int nbArgs, char* arg[])
         puts("\t8 : Quitter le programme.");
 
         // {Saisie et test de validité du choix}
-        do {
+        do
+        {
             printf("\t\tVotre choix : ");
             choix = lireEntier();
         } while (choix < 1 || choix > 8);
 
-        switch (choix) {
-            case 1:
-                saisieRubans();
-                break;
+        switch (choix)
+        {
+        case 1:
+            saisieRubans();
+            break;
 
-            case 2:
-                afficheBateaux();
-                break;
+        case 2:
+            afficheBateaux();
+            break;
 
-            case 3:
-                tempsLocation();
-                break;
+        case 3:
+            tempsLocation();
+            break;
 
-            case 4:
-                locationsInf2h();
-                break;
+        case 4:
+            locationsInf2h();
+            break;
 
-            case 5:
-                creerLocations();
-                break;
+        case 5:
+            creerLocations();
+            break;
 
-            case 6:
-                afficherLocations();
-                break;
+        case 6:
+            afficherLocations();
+            break;
 
-            case 7:
-                tempsMaxAttente();
-                break;
+        case 7:
+            tempsMaxAttente();
+            break;
 
-            case 8:
-                break;
-
+        case 8:
+            break;
         }
 
     } while (choix != 8);
