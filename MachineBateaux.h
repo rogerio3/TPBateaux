@@ -22,6 +22,7 @@
 #define H_FERM  19  // heure de fermeture : 19 h 00
 #define MAXNOMFICHIER 64 // Longueur maximum d'un nom de fichier
 
+
 /*------- Définitions de types et de sous-types -------*/
 typedef struct {
     int heures;  // H_OUVR .. H_FERM
